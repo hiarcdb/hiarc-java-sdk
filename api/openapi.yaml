@@ -1,0 +1,2540 @@
+openapi: 3.0.3
+info:
+  description: Welcome to the Hiarc API documentation.
+  license:
+    name: MIT
+  title: Hiarc API
+  version: 0.1.0
+servers:
+- description: HiarcServer
+  url: http://localhost:5000
+security:
+- AdminApiKeyAuth: []
+- JWTBearerAuth: []
+paths:
+  /users:
+    get:
+      operationId: getAllUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfUsers'
+          description: A list of User objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get all Users
+      tags:
+      - User
+      x-accepts: application/json
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        description: User information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: A User object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a User
+      tags:
+      - User
+      x-contentType: application/json
+      x-accepts: application/json
+  /users/{key}:
+    delete:
+      operationId: deleteUser
+      parameters:
+      - description: Key of user to delete
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Delete a User
+      tags:
+      - User
+      x-accepts: application/json
+    get:
+      operationId: getUser
+      parameters:
+      - description: Key of user to get
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: A User object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get a User
+      tags:
+      - User
+      x-accepts: application/json
+    put:
+      operationId: updateUser
+      parameters:
+      - description: Key of user to get
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+        description: User information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: A User object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Update a User
+      tags:
+      - User
+      x-contentType: application/json
+      x-accepts: application/json
+  /users/current:
+    get:
+      operationId: getCurrentUser
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: A User object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get the current User
+      tags:
+      - User
+      x-accepts: application/json
+  /users/find:
+    post:
+      operationId: findUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindUsersRequest'
+        description: User query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfUsers'
+          description: A list of User objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Find a User
+      tags:
+      - User
+      x-contentType: application/json
+      x-accepts: application/json
+  /users/{key}/groups:
+    get:
+      operationId: getGroupsForUser
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of user
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfGroups'
+          description: A list of Group objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get Groups for a User
+      tags:
+      - User
+      - Groups
+      x-accepts: application/json
+  /users/current/groups:
+    get:
+      operationId: getGroupsForCurrentUser
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfGroups'
+          description: A list of Group object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get the Groups for the current User
+      tags:
+      - User
+      - Group
+      x-accepts: application/json
+  /files:
+    post:
+      operationId: createFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                request:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+              type: object
+        description: File information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Create a File
+      tags:
+      - File
+      x-contentType: multipart/form-data
+      x-accepts: application/json
+  /files/{key}:
+    delete:
+      operationId: deleteFile
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to delete
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Delete a File
+      tags:
+      - File
+      x-accepts: application/json
+    get:
+      operationId: getFile
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a File's Info
+      tags:
+      - File
+      x-accepts: application/json
+    put:
+      operationId: updateFile
+      parameters:
+      - description: Key of file to update
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFileRequest'
+        description: File information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Update a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/allowed:
+    post:
+      operationId: filterAllowedFiles
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllowedFilesRequest'
+        description: File key list
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllowedFiles'
+          description: A list of File keys
+      security:
+      - AdminApiKeyAuth: []
+      summary: Filter a list of File keys that a User can access
+      tags:
+      - Files
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/attach:
+    put:
+      operationId: attachToExisitingFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to attach to
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachToExistingFileRequest'
+        description: File information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Attach to an existing File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/copy:
+    put:
+      operationId: copyFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to attach to
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyFileRequest'
+        description: File information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Copy a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/versions:
+    get:
+      operationId: getVersions
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to get all versions
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFileVersions'
+          description: A list of File Versions
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a list of File Versions
+      tags:
+      - File
+      x-accepts: application/json
+    put:
+      operationId: addVersion
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to add a version
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_1'
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                request:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+              type: object
+        description: File information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: A File object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a new File Version
+      tags:
+      - File
+      x-contentType: multipart/form-data
+      x-accepts: application/json
+  /files/{key}/retentionpolicies:
+    get:
+      operationId: getRetentionPolicies
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to get all retention policies
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRetentionPolicyApplication'
+          description: A list of Retention Policies
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a list of Retention Policies on a File
+      tags:
+      - File
+      x-accepts: application/json
+    put:
+      operationId: addRetentionPolicyToFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRetentionPolicyToFileRequest'
+        description: Retention Policy information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a Retention Policy to a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/collections:
+    get:
+      operationId: getCollectionsForFile
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to get all collections
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfCollections'
+          description: A list of Collections
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a list of Collections for a File
+      tags:
+      - File
+      x-accepts: application/json
+  /files/{key}/download:
+    get:
+      operationId: downloadFile
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to download
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: A binary file
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Download a File
+      tags:
+      - File
+      x-accepts: application/octet-stream
+  /files/directuploadurl:
+    post:
+      operationId: createDirectUploadUrl
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: When access to the url should expire
+        explode: true
+        in: query
+        name: expiresInSeconds
+        required: false
+        schema:
+          type: integer
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDirectUploadUrlRequest'
+        description: Storage service information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDirectUpload'
+          description: A direct upload object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a direct upload url to a storage service
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/directdownloadurl:
+    get:
+      operationId: getDirectDownloadUrl
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file to get download URL
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: When access to the url should expire
+        explode: true
+        in: query
+        name: expiresInSeconds
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDirectDownload'
+          description: A direct download URL object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a direct download URL to a File
+      tags:
+      - File
+      x-accepts: application/json
+  /files/{key}/users:
+    put:
+      operationId: addUserToFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToFileRequest'
+        description: User information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Give a user access to a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/groups:
+    put:
+      operationId: addGroupToFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupToFileRequest'
+        description: Group information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Give a group access to a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /files/{key}/classifications:
+    put:
+      operationId: addClassificationToFile
+      parameters:
+      - explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of file
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddClassificationToFileRequest'
+        description: Classification information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a Classification to a File
+      tags:
+      - File
+      x-contentType: application/json
+      x-accepts: application/json
+  /tokens/user:
+    post:
+      operationId: createUserToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserTokenRequest'
+        description: User information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentials'
+          description: A User Token object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Token for a User
+      tags:
+      - Token
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections/{key}:
+    delete:
+      operationId: deleteCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection to delete
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Delete a Collection
+      tags:
+      - Collection
+      x-accepts: application/json
+    get:
+      operationId: getCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of collection to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+          description: A Collection object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a Collection's Info
+      tags:
+      - Collection
+      x-accepts: application/json
+    put:
+      operationId: updateCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of collection to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCollectionRequest'
+        description: Collection information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+          description: A Collection object
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Update a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections:
+    get:
+      operationId: getAllCollections
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfCollections'
+          description: A list of Collection objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get all Collections
+      tags:
+      - Collection
+      x-accepts: application/json
+    post:
+      operationId: createCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollectionRequest'
+        description: Collection information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+          description: A Collection object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections/{key}/files:
+    get:
+      operationId: getCollectionFiles
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFiles'
+          description: A List of File objects
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a Collection's Files
+      tags:
+      - Collection
+      x-accepts: application/json
+    put:
+      operationId: addFileToCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFileToCollectionRequest'
+        description: Add File request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a File to a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections/{key}/children:
+    get:
+      operationId: getCollectionChildren
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfCollections'
+          description: A List of Collection objects
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a Collection's child Collections
+      tags:
+      - Collection
+      x-accepts: application/json
+  /collections/{key}/items:
+    get:
+      operationId: getCollectionItems
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionItems'
+          description: Collection Item objects
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Get a Collection's child items, including Collections and Files
+      tags:
+      - Collection
+      x-accepts: application/json
+  /collections/find:
+    post:
+      operationId: findCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindCollectionsRequest'
+        description: Collection query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfCollections'
+          description: A list of Collection objects
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Find a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections/{key}/files/{fileKey}:
+    delete:
+      operationId: removeFileFromCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Key of File to remove from Collection
+        explode: false
+        in: path
+        name: fileKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Remove a File from a Collection
+      tags:
+      - Collection
+      x-accepts: application/json
+  /collections/{key}/children/{childKey}:
+    put:
+      operationId: addChildToCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Key of item to add as child to Collection
+        explode: false
+        in: path
+        name: childKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a child item to a Collection
+      tags:
+      - Collection
+      x-accepts: application/json
+  /collections/{key}/users:
+    put:
+      operationId: addUserToCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToCollectionRequest'
+        description: Add User request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a User to a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /collections/{key}/groups:
+    put:
+      operationId: addGroupToCollection
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Collection
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupToCollectionRequest'
+        description: Add Group request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      - JWTBearerAuth: []
+      summary: Add a Group to a Collection
+      tags:
+      - Collection
+      x-contentType: application/json
+      x-accepts: application/json
+  /classifications/{key}:
+    delete:
+      operationId: deleteClassification
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Classification to delete
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Delete a Classification
+      tags:
+      - Classification
+      x-accepts: application/json
+    get:
+      operationId: getClassification
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Classification to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classification'
+          description: A Classification object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get a Classification's Info
+      tags:
+      - Classification
+      x-accepts: application/json
+    put:
+      operationId: updateClassification
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Key of Classification to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClassificationRequest'
+        description: Classification information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classification'
+          description: A Classification object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Update a Classification
+      tags:
+      - Classification
+      x-contentType: application/json
+      x-accepts: application/json
+  /classifications:
+    get:
+      operationId: getAllClassifications
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfClassifications'
+          description: A list of Classification objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get all Classifications
+      tags:
+      - Classification
+      x-accepts: application/json
+    post:
+      operationId: createClassification
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClassificationRequest'
+        description: Classification information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classification'
+          description: A Classification object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Classification
+      tags:
+      - Classification
+      x-contentType: application/json
+      x-accepts: application/json
+  /classifications/find:
+    post:
+      operationId: findClassification
+      parameters:
+      - description: Optional key of user to impersonate
+        explode: false
+        in: header
+        name: X-Hiarc-User-Key
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindClassificationsRequest'
+        description: Classification query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfClassifications'
+          description: A list of Classification objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Find a Classification
+      tags:
+      - Classification
+      x-contentType: application/json
+      x-accepts: application/json
+  /groups/{key}:
+    delete:
+      operationId: deleteGroup
+      parameters:
+      - description: Key of Group to delete
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Delete a Group
+      tags:
+      - Group
+      x-accepts: application/json
+    get:
+      operationId: getGroup
+      parameters:
+      - description: Key of Group to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: A Group object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get a Group's Info
+      tags:
+      - Group
+      x-accepts: application/json
+    put:
+      operationId: updateGroup
+      parameters:
+      - description: Key of Group to update
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupRequest'
+        description: Group information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: A Group object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Update a Group
+      tags:
+      - Group
+      x-contentType: application/json
+      x-accepts: application/json
+  /groups/{key}/users/{userKey}:
+    put:
+      operationId: addUserToGroup
+      parameters:
+      - description: Key of Group
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Key of User to add to Group
+        explode: false
+        in: path
+        name: userKey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Add a User to a Group
+      tags:
+      - Group
+      x-accepts: application/json
+  /groups:
+    get:
+      operationId: getAllGroups
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfGroups'
+          description: A list of Group objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get all Groups
+      tags:
+      - Group
+      x-accepts: application/json
+    post:
+      operationId: createGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupRequest'
+        description: Group information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: A Group object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Group
+      tags:
+      - Group
+      x-contentType: application/json
+      x-accepts: application/json
+  /groups/find:
+    post:
+      operationId: findGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindGroupsRequest'
+        description: Group query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfGroups'
+          description: A list of Group objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Find a Group
+      tags:
+      - Group
+      x-contentType: application/json
+      x-accepts: application/json
+  /legalholds:
+    post:
+      operationId: createLegalHold
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLegalHoldRequest'
+        description: Legal Hold information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+          description: A Legal Hold object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Legal Hold
+      tags:
+      - Legal Hold
+      x-contentType: application/json
+      x-accepts: application/json
+  /legalholds/{key}:
+    get:
+      operationId: getLegalHold
+      parameters:
+      - description: Key of Legal Hold to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+          description: A Legal Hold object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get a Legal Hold's Info
+      tags:
+      - Legal Hold
+      x-accepts: application/json
+  /retentionpolicies:
+    get:
+      operationId: getAllRetentionPolicies
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRetentionPolicies'
+          description: A list of Retention Policy objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get all Retention Policies
+      tags:
+      - Retention Policy
+      x-accepts: application/json
+    post:
+      operationId: createRetentionPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRetentionPolicyRequest'
+        description: Retention Policy information
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetentionPolicy'
+          description: A Retention Policy object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Create a Retention Policy
+      tags:
+      - Retention Policy
+      x-contentType: application/json
+      x-accepts: application/json
+  /retentionpolicies/{key}:
+    get:
+      operationId: getRetentionPolicy
+      parameters:
+      - description: Key of Retention Policy to get info
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetentionPolicy'
+          description: A Retention Policy object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Get a Retention Policy's Info
+      tags:
+      - Retention Policy
+      x-accepts: application/json
+    put:
+      operationId: updateRetentionPolicy
+      parameters:
+      - description: Key of Retention Policy to update
+        explode: false
+        in: path
+        name: key
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRetentionPolicyRequest'
+        description: RetentionPolicy information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetentionPolicy'
+          description: A Retention Policy object
+      security:
+      - AdminApiKeyAuth: []
+      summary: Update a Retention Policy
+      tags:
+      - Retention Policy
+      x-contentType: application/json
+      x-accepts: application/json
+  /retentionpolicies/find:
+    post:
+      operationId: findRetentionPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindRetentionPoliciesRequest'
+        description: Retention Policy query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRetentionPolicies'
+          description: A list of Retention Policy objects
+      security:
+      - AdminApiKeyAuth: []
+      summary: Find a Retention Policy
+      tags:
+      - Retention Policy
+      x-contentType: application/json
+      x-accepts: application/json
+  /admin/database/init:
+    post:
+      operationId: initDB
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Init the Hiarc database
+      tags:
+      - Admin
+      x-accepts: application/json
+  /admin/database/reset:
+    put:
+      operationId: resetDB
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+          description: Empty response
+      security:
+      - AdminApiKeyAuth: []
+      summary: Reset the Hiarc database
+      tags:
+      - Admin
+      x-accepts: application/json
+components:
+  requestBodies:
+    inline_object_1:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/inline_object_1'
+      required: true
+    inline_object:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+      required: true
+  schemas:
+    Empty:
+      title: Empty Schema
+      type: object
+    Entity:
+      discriminator:
+        mapping:
+          user: '#/components/schemas/User'
+          group: '#/components/schemas/Group'
+          file: '#/components/schemas/File'
+          classification: '#/components/schemas/Classification'
+          collection: '#/components/schemas/Collection'
+          legalHold: '#/components/schemas/LegalHold'
+          retentionPolicy: '#/components/schemas/RetentionPolicy'
+        propertyName: type
+      properties:
+        key:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+          type: object
+        createdBy:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        modifiedAt:
+          format: date-time
+          type: string
+      type: object
+    CreateOrUpdateEntityRequest:
+      discriminator:
+        mapping:
+          createUser: '#/components/schemas/CreateUserRequest'
+          updateUser: '#/components/schemas/UpdateUserRequest'
+          createGroup: '#/components/schemas/CreateGroupRequest'
+          updateGroup: '#/components/schemas/UpdateGroupRequest'
+          createCollection: '#/components/schemas/CreateCollectionRequest'
+          updateCollection: '#/components/schemas/UpdateCollectionRequest'
+          createFile: '#/components/schemas/CreateFileRequest'
+          createClassification: '#/components/schemas/CreateClassificationRequest'
+          updateClassification: '#/components/schemas/UpdateClassificationRequest'
+          createLegalHold: '#/components/schemas/CreateLegalHoldRequest'
+          createRetentionPolicy: '#/components/schemas/CreateRetentionPolicyRequest'
+          updateRetentionPolicy: '#/components/schemas/UpdateRetentionPolicyRequest'
+        propertyName: key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          additionalProperties:
+            type: object
+          type: object
+      type: object
+    FindEntityRequest:
+      discriminator:
+        mapping:
+          findUser: '#/components/schemas/FindUsersRequest'
+          findGroup: '#/components/schemas/FindGroupsRequest'
+          findCollection: '#/components/schemas/FindCollectionsRequest'
+          findClassification: '#/components/schemas/FindClassificationsRequest'
+          findRetentionPolicies: '#/components/schemas/FindRetentionPoliciesRequest'
+        propertyName: query
+      properties:
+        query:
+          items:
+            additionalProperties:
+              type: object
+            type: object
+          type: array
+      type: object
+    CreateUserTokenRequest:
+      example:
+        expirationMinues: 0.8008281904610115
+        key: key
+      properties:
+        key:
+          type: string
+        expirationMinues:
+          type: number
+      type: object
+    CreateUserRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    CreateDirectUploadUrlRequest:
+      example:
+        storageService: storageService
+      properties:
+        storageService:
+          type: string
+      type: object
+    CreateLegalHoldRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    CreateRetentionPolicyRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - $ref: '#/components/schemas/CreateRetentionPolicyRequest_allOf'
+    CreateGroupRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    CreateCollectionRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    CreateClassificationRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    CreateFileRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - $ref: '#/components/schemas/CreateFileRequest_allOf'
+    AddUserToFileRequest:
+      example:
+        userKey: userKey
+      properties:
+        userKey:
+          type: string
+        accessLevel:
+          $ref: '#/components/schemas/AccessLevel'
+      type: object
+    AddUserToCollectionRequest:
+      example:
+        userKey: userKey
+      properties:
+        userKey:
+          type: string
+        accessLevel:
+          $ref: '#/components/schemas/AccessLevel'
+      type: object
+    AddGroupToCollectionRequest:
+      example:
+        groupKey: groupKey
+      properties:
+        groupKey:
+          type: string
+        accessLevel:
+          $ref: '#/components/schemas/AccessLevel'
+      type: object
+    AddFileToCollectionRequest:
+      example:
+        fileKey: fileKey
+      properties:
+        fileKey:
+          type: string
+      type: object
+    AddGroupToFileRequest:
+      example:
+        groupKey: groupKey
+      properties:
+        groupKey:
+          type: string
+        accessLevel:
+          $ref: '#/components/schemas/AccessLevel'
+      type: object
+    AddRetentionPolicyToFileRequest:
+      example:
+        retentionPolicyKey: retentionPolicyKey
+      properties:
+        retentionPolicyKey:
+          type: string
+      type: object
+    AddClassificationToFileRequest:
+      example:
+        classificationKey: classificationKey
+      properties:
+        classificationKey:
+          type: string
+      type: object
+    AddVersionToFileRequest:
+      properties:
+        key:
+          type: string
+        storageService:
+          type: string
+      type: object
+    UpdateUserRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    UpdateRetentionPolicyRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - $ref: '#/components/schemas/CreateRetentionPolicyRequest_allOf'
+    UpdateGroupRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    UpdateCollectionRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    UpdateClassificationRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
+      - type: object
+    UpdateFileRequest:
+      example:
+        metadata: '{}'
+        name: name
+        description: description
+        key: key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+      type: object
+    FindUsersRequest:
+      allOf:
+      - $ref: '#/components/schemas/FindEntityRequest'
+      - type: object
+    FindRetentionPoliciesRequest:
+      allOf:
+      - $ref: '#/components/schemas/FindEntityRequest'
+      - type: object
+    FindGroupsRequest:
+      allOf:
+      - $ref: '#/components/schemas/FindEntityRequest'
+      - type: object
+    FindCollectionsRequest:
+      allOf:
+      - $ref: '#/components/schemas/FindEntityRequest'
+      - type: object
+    FindClassificationsRequest:
+      allOf:
+      - $ref: '#/components/schemas/FindEntityRequest'
+      - type: object
+    AllowedFilesRequest:
+      example:
+        keys:
+        - keys
+        - keys
+      properties:
+        keys:
+          items:
+            type: string
+          type: array
+      type: object
+    AllowedFiles:
+      items:
+        type: string
+      type: array
+    AttachToExistingFileRequest:
+      example:
+        storageService: storageService
+        name: name
+        storageId: storageId
+      properties:
+        name:
+          type: string
+        storageService:
+          type: string
+        storageId:
+          type: string
+      type: object
+    CopyFileRequest:
+      example:
+        storageService: storageService
+        key: key
+      properties:
+        key:
+          type: string
+        storageService:
+          type: string
+      type: object
+    User:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - type: object
+    LegalHold:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - type: object
+    Classification:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - type: object
+    Group:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - type: object
+    File:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - $ref: '#/components/schemas/File_allOf'
+    FileVersion:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        storageService: storageService
+        createdBy: createdBy
+        storageId: storageId
+      properties:
+        createdBy:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        storageService:
+          type: string
+        storageId:
+          type: string
+      type: object
+    FileDirectUpload:
+      example:
+        directUploadUrl: directUploadUrl
+        storageService: storageService
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+        storageId: storageId
+      properties:
+        directUploadUrl:
+          type: string
+        storageId:
+          type: string
+        storageService:
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      type: object
+    FileDirectDownload:
+      example:
+        directDownloadUrl: directDownloadUrl
+        key: key
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        key:
+          type: string
+        directDownloadUrl:
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      type: object
+    RetentionPolicy:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - $ref: '#/components/schemas/CreateRetentionPolicyRequest_allOf'
+    RetentionPolicyApplication:
+      example:
+        appliedAt: 2000-01-23T04:56:07.000+00:00
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        retentionPolicy:
+          $ref: '#/components/schemas/RetentionPolicy'
+        appliedAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      type: object
+    Collection:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - type: object
+    CollectionItems:
+      example:
+        childCollections:
+        - null
+        - null
+        files:
+        - null
+        - null
+      properties:
+        childCollections:
+          items:
+            $ref: '#/components/schemas/Collection'
+          type: array
+        files:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
+    UserCredentials:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        bearerToken: bearerToken
+        userKey: userKey
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        userKey:
+          type: string
+        bearerToken:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+      type: object
+    AccessLevel:
+      enum:
+      - CO_OWNER
+      - READ_WRITE
+      - READ_ONLY
+      - UPLOAD_ONLY
+      type: string
+      x-enum-varnames:
+      - CO_OWNER
+      - READ_WRITE
+      - READ_ONLY
+      - UPLOAD_ONLY
+    ListOfUsers:
+      items:
+        $ref: '#/components/schemas/User'
+      type: array
+    ListOfGroups:
+      items:
+        $ref: '#/components/schemas/Group'
+      type: array
+    ListOfClassifications:
+      items:
+        $ref: '#/components/schemas/Classification'
+      type: array
+    ListOfFileVersions:
+      items:
+        $ref: '#/components/schemas/FileVersion'
+      type: array
+    ListOfFiles:
+      items:
+        $ref: '#/components/schemas/File'
+      type: array
+    ListOfRetentionPolicies:
+      items:
+        $ref: '#/components/schemas/RetentionPolicy'
+      type: array
+    ListOfRetentionPolicyApplication:
+      items:
+        $ref: '#/components/schemas/RetentionPolicyApplication'
+      type: array
+    ListOfCollections:
+      items:
+        $ref: '#/components/schemas/Collection'
+      type: array
+    inline_object:
+      properties:
+        request:
+          type: string
+        file:
+          format: binary
+          type: string
+      type: object
+    inline_object_1:
+      properties:
+        request:
+          type: string
+        file:
+          format: binary
+          type: string
+      type: object
+    CreateRetentionPolicyRequest_allOf:
+      properties:
+        seconds:
+          type: integer
+    CreateFileRequest_allOf:
+      properties:
+        storageService:
+          type: string
+    File_allOf:
+      properties:
+        versionCount:
+          type: number
+  securitySchemes:
+    AdminApiKeyAuth:
+      in: header
+      name: X-Hiarc-Api-Key
+      type: apiKey
+    JWTBearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+
