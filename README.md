@@ -1,4 +1,4 @@
-# hiarcSDK
+# Hiarc Java SDK
 
 Hiarc API
 - API version: 0.1.0
